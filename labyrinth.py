@@ -32,7 +32,7 @@ class Maze:
 class Elements:
 
     """
-    Class to define Elements' position in the maze.
+    Class for managing elements in the maze
     MacGyver and Guardian's positions are written in structure
     Items' positions are randomly defined at start
     """
@@ -48,6 +48,9 @@ class Elements:
         self.define_items_position()
 
     def get_macgyver_position(self):
+        """
+        get MacGyver position in structure
+        """
 
         for liste in self.structure:
             for column in liste:
@@ -57,7 +60,9 @@ class Elements:
         return y, x
 
     def get_guardian_position(self):
-
+        """
+        get guardian position in structure
+        """
         for liste in self.structure:
             for column in liste:
                 if column == "G":
@@ -112,15 +117,6 @@ class Elements:
                     free_position = False
             return free_position
 
-    def get_item(self, item_index):
-
-        """
-        Change item's coordinates to 0 when item is picked up by MacGyver
-        """
-
-        self.items[item_index][1] = 0
-        self.items[item_index][2] = 0
-
     def is_free_to_go(self, y, x):
 
         """
@@ -137,6 +133,9 @@ class Elements:
             return True
 
     def macgyver_move(self, direction):
+        """
+        Manage MacGyver's moves
+        """
 
         y = self.macGyver_YX[0]
         x = self.macGyver_YX[1]
@@ -172,6 +171,10 @@ class Elements:
         return reply
 
     def check_if_item(self, y, x):
+        """
+        check if MacGyver found item
+        if so : return true
+        """
         for item in self.items:
             item_index = self.items.index(item)
             if self.items[item_index][1] == y and self.items[item_index][2] == x:
@@ -182,6 +185,12 @@ class Elements:
                 return True
 
     def check_if_guardian(self, y, x):
+        """
+        Check if MacGyver found guardian
+        if not : return 0
+        if so and he has all items : return 1
+        if so and he as not all items : return 2
+        """
         if self.macGyver_YX == self.guardian_YX:
             if self.counter == len(self.items):
                 return 1
@@ -211,15 +220,23 @@ class Screen:
         self.display_elements()
 
     def display_elements(self):
+        """
+        Preparing elements' display
+        """
+
+        # Message for picked up items
 
         self.counter = self.my_elements.counter
         self.label1 = "You got no item !"
         if self.counter != 0:
             self.label1 = "You got " + str(self.counter) + " item(s) !"
         self.label = self.my_font.render(self.label1, 1, (0, 0, 0))
+
+        # floor and panel location
         self.surface.blit(self.floor, (0, 0))
         self.surface.blit(self.panel, (surface_width - board_width, 0))
 
+        # walls' location
         raw_n = 0
         for raw in self.my_elements.structure:
             column_n = 0
@@ -232,21 +249,14 @@ class Screen:
                 column_n += 1
             raw_n += 1
 
+        # items' location
         for item in self.my_elements.items:
             item_pic = item[3]
             item_pic = pygame.image.load(item_pic).convert_alpha(self.surface)
             self.surface.blit(
                 item_pic, (self.screen_pos(item[2]), self.screen_pos(item[1]))
             )
-
-        self.surface.blit(
-            self.macgyver,
-            (
-                self.screen_pos(self.my_elements.macGyver_YX[1]),
-                self.screen_pos(self.my_elements.macGyver_YX[0]),
-            ),
-        )
-
+        # guardian's location
         self.surface.blit(
             self.guardian,
             (
@@ -255,9 +265,22 @@ class Screen:
             ),
         )
 
+        # MacGyver's location
+        self.surface.blit(
+            self.macgyver,
+            (
+                self.screen_pos(self.my_elements.macGyver_YX[1]),
+                self.screen_pos(self.my_elements.macGyver_YX[0]),
+            ),
+        )
+
+        # information label location
         self.surface.blit(self.label, (620, 20))
 
     def you_won(self):
+        """
+        informations' display if you won
+        """
         self.label2 = self.my_font2.render(text1, 1, (255, 0, 0))
         self.label3 = self.my_font2.render(text2, 1, (255, 0, 0))
         self.surface.blit(self.label2, (620, 350))
@@ -265,6 +288,9 @@ class Screen:
         pygame.display.flip()
 
     def you_lost(self):
+        """
+        informations' display if you lost
+        """
         self.label2 = self.my_font2.render(text1, 1, (255, 0, 0))
         self.label3 = self.my_font2.render(text3, 1, (255, 0, 0))
         self.surface.blit(self.label2, (620, 350))
