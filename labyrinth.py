@@ -1,3 +1,4 @@
+# coding:utf-8
 import os
 import pygame
 from random import randint
@@ -220,16 +221,15 @@ class Screen:
         self.wall = pygame.image.load(ct.wall_pic).convert_alpha(self.surface)
         self.panel = pygame.image.load(ct.right_panel).convert()
         self.my_font = pygame.font.SysFont("tahoma", 20)
-        self.my_font2 = pygame.font.SysFont("arial", 80)
-        self.display_elements()
+        self.my_font2 = pygame.font.SysFont("arial", 60)
+        self.display_elements(ct.CAN_MOVE)
 
-    def display_elements(self):
+    def display_elements(self, situation):
         """
         Preparing elements' display
         """
 
         # Message for picked up items
-
         self.counter = self.my_elements.counter
         self.label1 = "You got no item !"
         if self.counter == 1:
@@ -283,26 +283,46 @@ class Screen:
 
         # information label location
         self.surface.blit(self.label, (620, 20))
+        # self.label2 = self.my_font2.render(ct.text0, 1, (0, 0, 0))
+        # self.surface.blit(self.label2, (620, 500))
+
+        if situation == ct.CAN_MOVE:
+            self.you_play()
+
+        if situation == ct.MOVE_WIN:
+            self.you_won()
+
+        if situation == ct.MOVE_LOOSE:
+            self.you_lost()
+
+        rect = pygame.Rect(600, 500, 200, 300)
+        pygame.display.update(rect)
+        pygame.display.flip()
+
+    def you_play(self):
+        """
+        informations' display if you're playing
+        """
+        self.my_font2 = pygame.font.SysFont("arial", 60)
+        self.label2 = self.my_font2.render(ct.text0, 1, (0, 0, 0))
+        self.surface.blit(self.label2, (620, 500))
 
     def you_won(self):
         """
         informations' display if you won
         """
+
+        self.my_font2 = pygame.font.SysFont("arial", 40)
         self.label2 = self.my_font2.render(ct.text1, 1, (255, 0, 0))
-        self.label3 = self.my_font2.render(ct.text2, 1, (255, 0, 0))
-        self.surface.blit(self.label2, (620, 350))
-        self.surface.blit(self.label3, (620, 450))
-        pygame.display.flip()
+        self.surface.blit(self.label2, (620, 520))
 
     def you_lost(self):
         """
         informations' display if you lost
         """
-        self.label2 = self.my_font2.render(ct.text1, 1, (255, 0, 0))
-        self.label3 = self.my_font2.render(ct.text3, 1, (255, 0, 0))
-        self.surface.blit(self.label2, (620, 350))
-        self.surface.blit(self.label3, (620, 450))
-        pygame.display.flip()
+        self.my_font2 = pygame.font.SysFont("arial", 40)
+        self.label2 = self.my_font2.render(ct.text2, 1, (255, 0, 0))
+        self.surface.blit(self.label2, (620, 520))
 
     @staticmethod
     def screen_pos(coordinate):

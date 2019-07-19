@@ -1,3 +1,5 @@
+# coding:utf-8
+
 """
 Constants for "Helping MacGyver to Escape" game
 """
@@ -12,7 +14,7 @@ structure_file = "ressources/maze.txt"
 items_list = [
     ["Needle", 0, 0, "ressources/needle.png"],
     ["Ether", 0, 0, "ressources/ether.png"],
-    ["Tub", 0, 0, "ressources/tub.png"],
+    ["Tube", 0, 0, "ressources/tub.png"],
 ]
 
 window_title = "Helping MacGyver to Escape"
@@ -22,13 +24,14 @@ macgyver_pic = "ressources/Macgyver.png"
 guardian_pic = "ressources/guardian.png"
 floor_pic = "ressources/floor.jpg"
 wall_pic = "ressources/wall.png"
-right_panel = "ressources/cadre_infos.jpg"
+right_panel = "ressources/cadre_infos.png"
 
 got_item_sound = "ressources/got_item.wav"
 win_sound = "ressources/you_won.wav"
 lost_sound = "ressources/you_lost.wav"
 
-text1 = "YOU"
-text2 = "WON"
-text3 = "LOST"
+text0 = "Do it..."
+text1 = "You win..."
+text2 = "You loose..."
+
 CANT_MOVE, CAN_MOVE, FOUND_ITEM, MOVE_WIN, MOVE_LOOSE = range(5)
