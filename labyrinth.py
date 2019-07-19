@@ -1,8 +1,7 @@
 import os
 import pygame
-from pygame.locals import *
 from random import randint
-from constants import *
+import constants as ct
 
 
 class Maze:
@@ -14,7 +13,7 @@ class Maze:
     def __init__(self):
 
         directory = os.path.dirname(__file__)
-        self.path_to_file = os.path.join(directory, structure_file)
+        self.path_to_file = os.path.join(directory, ct.structure_file)
 
         with open(self.path_to_file, "r") as f:
 
@@ -42,7 +41,7 @@ class Elements:
         self.structure = structure
         self.macGyver_YX = self.get_macgyver_position()
         self.guardian_YX = self.get_guardian_position()
-        self.items = items_list
+        self.items = ct.items_list
         self.counter = 0
         self.inventory = []
         self.define_items_position()
@@ -79,6 +78,7 @@ class Elements:
 
         for item in self.items:
 
+            item_index = self.items.index(item)
             y = randint(0, 14)
             free_position = False
 
@@ -86,8 +86,8 @@ class Elements:
                 x = randint(0, 14)
                 if self.structure[y][x] == "0":
                     if self.check_is_object_free(self.items.index(item), y, x):
-                        self.items[self.items.index(item)][1] = y
-                        self.items[self.items.index(item)][2] = x
+                        self.items[item_index][1] = y
+                        self.items[item_index][2] = x
                         free_position = True
 
     def check_is_object_free(self, index, y, x):
@@ -106,16 +106,15 @@ class Elements:
                         xx is checked item's x
         """
 
-        free_position = True
-
         for item in self.items:
+
             item_index = self.items.index(item)
             yy = self.items[item_index][1]
             xx = self.items[item_index][2]
             if not item_index == index:
                 if y == yy and x == xx:
-                    free_position = False
-            return free_position
+                    return False
+        return True
 
     def is_free_to_go(self, y, x):
 
@@ -125,9 +124,14 @@ class Elements:
         parameters : y and x
         return : True if position is free
         """
-        if x < 0 or x > sprite_number - 1 or y < 0 or y > sprite_number - 1:
+        if (
+            x < 0
+            or x > ct.sprite_number - 1
+            or y < 0
+            or y > ct.sprite_number - 1
+        ):
             return False
-        elif self.structure[y][x] == "1":
+        if self.structure[y][x] == "1":
             return False
         else:
             return True
@@ -139,8 +143,6 @@ class Elements:
 
         y = self.macGyver_YX[0]
         x = self.macGyver_YX[1]
-
-        reply = 0
 
         if direction == "right":
             yy = y
@@ -159,16 +161,14 @@ class Elements:
             xx = x
 
         if self.is_free_to_go(yy, xx):
-            reply = 1
+
             self.macGyver_YX = (yy, xx)
             if self.check_if_item(yy, xx):
-                reply = 2
-            if self.check_if_guardian(yy, xx) == 1:
-                reply = 3
-            elif self.check_if_guardian(yy, xx) == 2:
-                reply = 4
+                return ct.FOUND_ITEM
+            else:
+                return self.check_if_guardian(yy, xx)
 
-        return reply
+        return ct.CANT_MOVE
 
     def check_if_item(self, y, x):
         """
@@ -177,27 +177,27 @@ class Elements:
         """
         for item in self.items:
             item_index = self.items.index(item)
-            if self.items[item_index][1] == y and self.items[item_index][2] == x:
+            if (
+                self.items[item_index][1] == y
+                and self.items[item_index][2] == x
+            ):
                 self.items[item_index][1] = 2
                 self.items[item_index][2] = 16 + item_index
                 self.counter += 1
-                self.inventory.append(self.items[item_index][0])
                 return True
 
     def check_if_guardian(self, y, x):
         """
         Check if MacGyver found guardian
-        if not : return 0
-        if so and he has all items : return 1
-        if so and he as not all items : return 2
+        returns move constants from ct (constants)
         """
         if self.macGyver_YX == self.guardian_YX:
             if self.counter == len(self.items):
-                return 1
+                return ct.MOVE_WIN
             else:
-                return 2
+                return ct.MOVE_LOOSE
         else:
-            return 0
+            return ct.CAN_MOVE
 
 
 class Screen:
@@ -210,11 +210,15 @@ class Screen:
 
         self.surface = surface
         self.my_elements = my_elements
-        self.floor = pygame.image.load(floor_pic).convert()
-        self.macgyver = pygame.image.load(macgyver_pic).convert_alpha(self.surface)
-        self.guardian = pygame.image.load(guardian_pic).convert_alpha(self.surface)
-        self.wall = pygame.image.load(wall_pic).convert_alpha(self.surface)
-        self.panel = pygame.image.load(right_panel).convert()
+        self.floor = pygame.image.load(ct.floor_pic).convert()
+        self.macgyver = pygame.image.load(ct.macgyver_pic).convert_alpha(
+            self.surface
+        )
+        self.guardian = pygame.image.load(ct.guardian_pic).convert_alpha(
+            self.surface
+        )
+        self.wall = pygame.image.load(ct.wall_pic).convert_alpha(self.surface)
+        self.panel = pygame.image.load(ct.right_panel).convert()
         self.my_font = pygame.font.SysFont("tahoma", 20)
         self.my_font2 = pygame.font.SysFont("arial", 80)
         self.display_elements()
@@ -228,13 +232,15 @@ class Screen:
 
         self.counter = self.my_elements.counter
         self.label1 = "You got no item !"
-        if self.counter != 0:
-            self.label1 = "You got " + str(self.counter) + " item(s) !"
+        if self.counter == 1:
+            self.label1 = "You got 1 item !"
+        if self.counter > 1:
+            self.label1 = "You got " + str(self.counter) + " items !"
         self.label = self.my_font.render(self.label1, 1, (0, 0, 0))
 
         # floor and panel location
         self.surface.blit(self.floor, (0, 0))
-        self.surface.blit(self.panel, (surface_width - board_width, 0))
+        self.surface.blit(self.panel, (ct.surface_width - ct.board_width, 0))
 
         # walls' location
         raw_n = 0
@@ -244,7 +250,8 @@ class Screen:
             for column in raw:
                 if column == "1":
                     self.surface.blit(
-                        self.wall, (self.screen_pos(column_n), self.screen_pos(raw_n))
+                        self.wall,
+                        (self.screen_pos(column_n), self.screen_pos(raw_n)),
                     )
                 column_n += 1
             raw_n += 1
@@ -281,8 +288,8 @@ class Screen:
         """
         informations' display if you won
         """
-        self.label2 = self.my_font2.render(text1, 1, (255, 0, 0))
-        self.label3 = self.my_font2.render(text2, 1, (255, 0, 0))
+        self.label2 = self.my_font2.render(ct.text1, 1, (255, 0, 0))
+        self.label3 = self.my_font2.render(ct.text2, 1, (255, 0, 0))
         self.surface.blit(self.label2, (620, 350))
         self.surface.blit(self.label3, (620, 450))
         pygame.display.flip()
@@ -291,8 +298,8 @@ class Screen:
         """
         informations' display if you lost
         """
-        self.label2 = self.my_font2.render(text1, 1, (255, 0, 0))
-        self.label3 = self.my_font2.render(text3, 1, (255, 0, 0))
+        self.label2 = self.my_font2.render(ct.text1, 1, (255, 0, 0))
+        self.label3 = self.my_font2.render(ct.text3, 1, (255, 0, 0))
         self.surface.blit(self.label2, (620, 350))
         self.surface.blit(self.label3, (620, 450))
         pygame.display.flip()
@@ -304,4 +311,4 @@ class Screen:
         Calculate position on pygame's surface
         """
 
-        return coordinate * sprite_size
+        return coordinate * ct.sprite_size

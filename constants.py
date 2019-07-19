@@ -31,3 +31,4 @@ lost_sound = "ressources/you_lost.wav"
 text1 = "YOU"
 text2 = "WON"
 text3 = "LOST"
+CANT_MOVE, CAN_MOVE, FOUND_ITEM, MOVE_WIN, MOVE_LOOSE = range(5)

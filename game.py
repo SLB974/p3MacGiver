@@ -1,19 +1,19 @@
 import pygame
-from pygame.locals import *
-from constants import *
+import pygame.locals as cpy
+import constants as ct
 import labyrinth
 
 my_maze = labyrinth.Maze()
 my_elements = labyrinth.Elements(my_maze.structure)
 
 pygame.init()
-surface = pygame.display.set_mode((surface_width, surface_height))
-icon = pygame.image.load(window_icon)
+surface = pygame.display.set_mode((ct.surface_width, ct.surface_height))
+icon = pygame.image.load(ct.window_icon)
 pygame.display.set_icon(icon)
-pygame.display.set_caption(window_title)
-sound_got = pygame.mixer.Sound(got_item_sound)
-sound_won = pygame.mixer.Sound(win_sound)
-sound_lost = pygame.mixer.Sound(lost_sound)
+pygame.display.set_caption(ct.window_title)
+sound_got = pygame.mixer.Sound(ct.got_item_sound)
+sound_won = pygame.mixer.Sound(ct.win_sound)
+sound_lost = pygame.mixer.Sound(ct.lost_sound)
 my_screen = labyrinth.Screen(surface, my_elements)
 pygame.display.flip()
 
@@ -27,34 +27,34 @@ while launched:
         direction = ""
         if event.type == pygame.QUIT:
             launched = False
-        elif event.type == KEYDOWN:
-            if event.key == K_RIGHT:
+        elif event.type == cpy.KEYDOWN:
+            if event.key == cpy.K_RIGHT:
                 direction = "right"
-            elif event.key == K_LEFT:
+            elif event.key == cpy.K_LEFT:
                 direction = "left"
-            elif event.key == K_UP:
+            elif event.key == cpy.K_UP:
                 direction = "up"
-            elif event.key == K_DOWN:
+            elif event.key == cpy.K_DOWN:
                 direction = "down"
 
         if direction != "":
             result = my_elements.macgyver_move(direction)
 
-            if result != 0:
+            if result != ct.CANT_MOVE:
                 my_screen.display_elements()
                 pygame.display.flip()
 
-            if result == 2:
+            if result == ct.FOUND_ITEM:
                 sound_got.play()
 
-            if result == 3:
+            if result == ct.MOVE_WIN:
                 sound_won.play()
                 my_screen.you_won()
                 pygame.time.delay(15000)
-                pygame.quit()
+                launched = False
 
-            if result == 4:
+            if result == ct.MOVE_LOOSE:
                 sound_lost.play()
                 my_screen.you_lost()
                 pygame.time.delay(5000)
-                pygame.quit()
+                launched = False
