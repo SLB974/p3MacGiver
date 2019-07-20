@@ -1,7 +1,7 @@
 # coding:utf-8
 
 """
-Constants for "Helping MacGyver to Escape" game
+Constants for "Help MacGyver to Escape" game
 """
 
 sprite_size = 40
@@ -17,7 +17,7 @@ items_list = [
     ["Tube", 0, 0, "ressources/tub.png"],
 ]
 
-window_title = "Helping MacGyver to Escape"
+window_title = "Help MacGyver to Escape"
 window_icon = "ressources/MacGyver.png"
 
 macgyver_pic = "ressources/Macgyver.png"
@@ -34,4 +34,4 @@ text0 = "Do it..."
 text1 = "You win..."
 text2 = "You loose..."
 
-CANT_MOVE, CAN_MOVE, FOUND_ITEM, MOVE_WIN, MOVE_LOOSE = range(5)
+CANT_MOVE, CAN_MOVE, MOVE_WIN, MOVE_LOOSE = range(4)

@@ -4,20 +4,16 @@ import pygame.locals as cpy
 import constants as ct
 import labyrinth
 
+""" Main script for game -Help MacGyver to Escape- """
+
+# Manage pygame surface initialization
 my_maze = labyrinth.Maze()
 my_elements = labyrinth.Elements(my_maze.structure)
-
 pygame.init()
 surface = pygame.display.set_mode((ct.surface_width, ct.surface_height))
-icon = pygame.image.load(ct.window_icon)
-pygame.display.set_icon(icon)
-pygame.display.set_caption(ct.window_title)
-sound_got = pygame.mixer.Sound(ct.got_item_sound)
-sound_won = pygame.mixer.Sound(ct.win_sound)
-sound_lost = pygame.mixer.Sound(ct.lost_sound)
 my_screen = labyrinth.Screen(surface, my_elements)
 
-
+# Manage loop and pygame events until you win or loose
 launched = True
 
 while launched:
@@ -40,21 +36,13 @@ while launched:
         if direction != "":
             result = my_elements.macgyver_move(direction)
 
-            if result == ct.CAN_MOVE:
-                my_screen.display_elements(ct.CAN_MOVE)
-
-            if result == ct.FOUND_ITEM:
-                my_screen.display_elements(ct.CAN_MOVE)
-                sound_got.play()
+            if result != ct.CANT_MOVE:
+                my_screen.display_elements(result)
 
             if result == ct.MOVE_WIN:
-                my_screen.display_elements(result)
-                sound_won.play()
                 pygame.time.delay(10000)
                 launched = False
 
             if result == ct.MOVE_LOOSE:
-                my_screen.display_elements(result)
-                sound_lost.play()
                 pygame.time.delay(5000)
                 launched = False
