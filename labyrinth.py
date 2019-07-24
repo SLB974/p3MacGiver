@@ -76,10 +76,11 @@ class Elements:
         for item in self.items:
 
             item_index = self.items.index(item)
-            y = randint(0, 14)
+            # y = randint(0, 14)
             free_position = False
 
             while not free_position:
+                y = randint(0, 14)
                 x = randint(0, 14)
                 if self.structure[y][x] == "0":
                     if self.check_is_object_free(item_index, y, x):
