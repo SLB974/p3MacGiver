@@ -76,7 +76,6 @@ class Elements:
         for item in self.items:
 
             item_index = self.items.index(item)
-            # y = randint(0, 14)
             free_position = False
 
             while not free_position:
